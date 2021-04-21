@@ -11,4 +11,4 @@ while true; do
 done
 
 echo "Running messages webservice"
-/usr/local/bin/gunicorn -w 2 -b 0.0.0.0:80 wsgi --timeout 300 --log-level=debug
+/usr/local/bin/gunicorn -b 0.0.0.0:80 --access-logfile - --error-logfile - wsgi
