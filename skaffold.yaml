@@ -1,0 +1,29 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:latest"
+  artifacts:
+  - image: messages-webservice
+    context: /Users/hamid.poursepanj/Documents/projects/messages
+
+deploy:
+  helm:
+    releases:
+    - name: db
+      namespace: default
+      chartPath: bitnami/mysql
+      remote: true
+      setValues:
+        auth.rootPassword: passwordroot
+      setFiles:
+        initdbScripts: /Users/hamid.poursepanj/Documents/projects/messages/helm/db/db-init-script.yaml
+    - name: mws
+      namespace: default
+      chartPath: /Users/hamid.poursepanj/Documents/projects/messages/helm/messages
+      setValues:
+          image.tag: latest
+
+
+          

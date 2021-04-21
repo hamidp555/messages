@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "1.0.0"
+description: Message webservice that supports CRUD oprations
+name: messages-webservice
+version: 1.0.0

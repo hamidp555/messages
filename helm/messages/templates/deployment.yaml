@@ -1,0 +1,79 @@
+{{- $name := include "messages-webservice.name" . -}}
+{{- $fullName:= include "messages-webservice.fullname" . -}}
+{{- $chart := include "messages-webservice.chart" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app.kubernetes.io/name: {{ $name }}
+    helm.sh/chart: {{ $chart }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    spec:
+      initContainers:
+        - name: init-db
+          image: bitnami/mysql
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $fullName }}
+                  key: DB_HOST
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $fullName }}
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $fullName }}
+                  key: DB_PASSWORD
+          command: ["/bin/sh", "-c"]
+          args: [
+            "until mysql -h $DB_HOST -u$DB_USER -p$DB_PASSWORD  \
+            -e \"SHOW GLOBAL VARIABLES LIKE 'PORT'\" >/dev/null; do \
+            echo Mysql is unavailable - sleeping; sleep 5; \
+            done; \
+            echo Mysql is running"
+          ]
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}{{ .Chart.Name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}            
+          envFrom:
+            - configMapRef:
+                name: {{ $fullName }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe: # restart this pod if liveness fails
+            httpGet:
+              path: /api/v1/rest/healthcheck
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe: # route traffic to this pods when ready
+            httpGet:
+              path: /api/v1/rest/healthcheck
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+		

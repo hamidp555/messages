@@ -1,0 +1,18 @@
+{{- $fullName:= include "messages-webservice.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}
+data:
+    LOG_LEVEL: {{ .Values.logLevel }}
+    ENV_NAME: {{ .Values.envName }}
+    DB_USER: {{ .Values.db.user | quote }}
+    DB_PASSWORD: {{ .Values.db.password | quote }}
+    DB_HOST: {{ .Values.db.host | quote }}
+    DB_NAME: {{ .Values.db.name | quote }}
+    DB_PORT: {{ .Values.db.port | quote }}
+
+
+
+
+

@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  tag: latest
+  pullPolicy: IfNotPresent
+
+logLevel: DEBUG
+envName: PROD
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  hosts:
+    - host: messages-webservice
+      paths:
+      - /
+db:
+  user: msg_user
+  password: passwordmsg
+  host: db-mysql.default.svc.cluster.local
+  port: 3306
+  name: msg_database
+  
+resources: 
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 500m 
+    memory: 256Mi
