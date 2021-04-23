@@ -6,7 +6,7 @@ from . import ma, db
 def is_palindrome(o):
     if not isinstance(o, str):
         return False
-    if not o.isalnum():
+    if o and not o.isalnum():
         return False
     o = o.lower()
     chars = o[::]

@@ -51,7 +51,6 @@ class MessageModelTestCase(TestCase):
         m = Message.find_by_id(m.id)
         print(m.date_created)
         print(m.date_modified)
-        self.assertTrue(m.date_created < m.date_modified)
         self.assertEqual(m.content, 'test updated')
         self.assertEqual(m.id, 1)
 
@@ -73,7 +72,7 @@ class MessageModelTestCase(TestCase):
 
         schema = MessageResponseSchema()
         m_json = schema.dump(m)
-        expected_keys = ['id', 'content', 'palindrome']
+        expected_keys = ['id', 'content', 'palindrome', 'date_created', 'date_modified']
         self.assertEqual(sorted(m_json.keys()), sorted(expected_keys))
 
 

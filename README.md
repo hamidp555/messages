@@ -81,7 +81,7 @@ Please refer to **Perequisites** section to prepare your local enviroment before
 There are three options to build and deploy *messages* app locally
 1. **Standalone** \
 To build and deploy the app as a standalone docker container:
-    - `docker build -t mesages-webservice:latest .` \
+    - `docker build -t messages-webservice:latest .` \
         Note:  `.` means you are ruuning this command at the root directory of the project
     - `docker run --rm --env ENV_NAME=DEV -p 80:80  -it messages-webservice:latest`
 
@@ -91,7 +91,7 @@ To build and deploy the app in minikub cluster using skaffold to run helm charts
 
 3. **k8s with helm** \
 To build and deploy the app in minikub cluster using helm:
-    - `docker build -t mesages-webservice:latest .`
+    - `docker build -t messages-webservice:latest .`
     - `helm repo add bitnami https://charts.bitnami.com/bitnami`
     - `helm install db bitnami/mysql --set auth.rootPassword=passwordroot  --set-file initdbScripts=<path_to_project_root>/messages/helm/db/db-init-script.yaml --kube-context minikube`
     - `helm install mw <path_to_project_root>/messages/helm/messages -f <path_to_project_root>/messages/helm/messages/values.yaml --kube-context minikube`
@@ -132,7 +132,7 @@ To run unit tests, follow the these steps:
 
 ## Note
 These assumtions are made to determine if a message is palindrome:
-- mesage is a string
+- message is a string
 - message should contain only alphanumeric character
 - leading and trailing whitespaces are consided as part of message 
 - the operation is not case sensitive 
