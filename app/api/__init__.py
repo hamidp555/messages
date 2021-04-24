@@ -13,8 +13,8 @@ spec = APISpec(
 )
 
 swaggerui_manager = get_swaggerui_blueprint(
-    '/api/v1/rest' + '/docs',
-    '/api/v1/rest' + '/swagger.json',
+    '/api/v1//docs',
+    '/api/v1/swagger.json',
     config={
         'app_name': "messages-webservice",
         'dom_id': '#swagger-ui',

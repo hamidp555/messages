@@ -64,13 +64,13 @@ spec:
               protocol: TCP
           livenessProbe: # restart this pod if liveness fails
             httpGet:
-              path: /api/v1/rest/healthcheck
+              path: /api/v1/healthcheck
               port: http
             initialDelaySeconds: 3
             periodSeconds: 3
           readinessProbe: # route traffic to this pods when ready
             httpGet:
-              path: /api/v1/rest/healthcheck
+              path: /api/v1/healthcheck
               port: http
             initialDelaySeconds: 3
             periodSeconds: 3

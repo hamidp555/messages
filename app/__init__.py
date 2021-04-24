@@ -27,7 +27,7 @@ def create_app(config_name):
 
         app.logger.info('Initializing webservice')
 
-        @app.route('/api/v1/rest/healthcheck', methods=['GET'])
+        @app.route('/api/v1/healthcheck', methods=['GET'])
         def healthcheck():
             return make_response(jsonify(status='healthy'), HTTPStatus.OK)
        
@@ -36,7 +36,7 @@ def create_app(config_name):
             app.register_blueprint(main_blueprint)
 
             from .api import api as api_blueprint
-            app.register_blueprint(api_blueprint, url_prefix='/api/v1/rest')
+            app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
             from .api import swaggerui_manager
             app.register_blueprint(swaggerui_manager)

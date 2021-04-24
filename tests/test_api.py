@@ -8,7 +8,7 @@ from app import db, create_app
 class APITestCase(TestCase):
 
     def setUp(self):
-        self.api_base_url = '/api/v1/rest'
+        self.api_base_url = '/api/v1'
         self.app = create_app('TEST')
         self.app_context = self.app.app_context()
         self.app_context.push()

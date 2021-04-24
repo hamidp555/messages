@@ -6,13 +6,13 @@ The following is the list of apis:
 
 | API  | Desscription |
 | ------------- | ------------- |
-| [GET] /api/v1/rest/messages  | Get a list of messages  |
-| [GET] /api/v1/rest/messages/{id} | Get a message by id  |
-| [POST] /api/v1/rest/messages | Create a message |
-| [PUT] /api/v1/rest/messages/{id} | Update a message  |
-| [DELETE] /api/v1/rest/messages/{id} | Delete a message  |
+| [GET] /api/v1/messages  | Get a list of messages  |
+| [GET] /api/v1/messages/{id} | Get a message by id  |
+| [POST] /api/v1/messages | Create a message |
+| [PUT] /api/v1/messages/{id} | Update a message  |
+| [DELETE] /api/v1/messages/{id} | Delete a message  |
 
-You can also access a more detailed list of available APIs by visiting `/api/v1/rest/docs/` url after the application is deployed.
+You can also access a more detailed list of available APIs by visiting `/api/v1/docs/` url after the application is deployed.
 ## Project Structure:
 
 *messages* webservice app consists of two layers: controller layer and repository layer.
