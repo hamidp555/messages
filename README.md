@@ -35,21 +35,13 @@ The following provides more details about the directory structure of the *messag
 │   ├── api
 │   └── exceptions.py
 ├── tests
-│   ├── test_message_model.py
-│   ├── test_api.py
-│   ├── test_palindrome.py
-│   └── __init__.py
+│   ├── ...
 ├── entrypoint.sh
 ├── migrations
-│   ├── versions
-│   ├── script.py.mako
-│   ├── env.py
-│   ├── alembic.ini
-│   └── README
+│   ├── ...
 ├── requirements.txt
 └── helm
-    ├── db
-    └── messages
+    ├── ...
 ```
 Files:
  - *wsgi.py*: is the entry to run the application. We are using *unicorn* http server which is a wsgi compliant http server
