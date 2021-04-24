@@ -1,0 +1,9 @@
+auth:
+  rootPassword: passwordroot
+  
+initdbScripts: 
+  init_script.sql: |-
+    CREATE DATABASE IF NOT EXISTS msg_database;
+    CREATE USER IF NOT EXISTS'msg_user'@'%' IDENTIFIED BY 'passwordmsg';
+    GRANT ALL PRIVILEGES ON msg_database.* TO 'msg_user'@'%';
+    FLUSH PRIVILEGES;

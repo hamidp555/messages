@@ -87,13 +87,13 @@ To build and deploy the app as a standalone docker container:
 
 2. **k8s with helm and skaffold** \
 To build and deploy the app in minikub cluster using skaffold to run helm charts: 
-    - `skaffold dev --force=false`
+    - `skaffold run`
 
 3. **k8s with helm** \
 To build and deploy the app in minikub cluster using helm:
     - `docker build -t messages-webservice:latest .`
     - `helm repo add bitnami https://charts.bitnami.com/bitnami`
-    - `helm install db bitnami/mysql --set auth.rootPassword=passwordroot  --set-file initdbScripts=<path_to_project_root>/messages/helm/db/db-init-script.yaml --kube-context minikube`
+    - `helm install db bitnami/mysql --set auth.rootPassword=passwordroot --version 8.5.0 -f <path_to_project_root>/messages/helm/db/values.yaml --kube-context minikube`
     - `helm install mw <path_to_project_root>/messages/helm/messages -f <path_to_project_root>/messages/helm/messages/values.yaml --kube-context minikube`
 
 ### Perequisites
