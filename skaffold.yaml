@@ -11,9 +11,8 @@ deploy:
   helm:
     releases:
     - name: db
-      version: "8.5.0"
       namespace: default
-      chartPath: bitnami/mysql
+      chartPath: bitnami/mongodb
       remote: true
       valuesFiles: [/Users/hamid.poursepanj/Documents/projects/messages/helm/db/values.yaml]
     - name: mws

@@ -8,8 +8,8 @@ class Config:
     NAME = 'webservice'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     MESSAGES_PER_PAGE = 10
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_RECORD_QUERIES = False
+    #SQLALCHEMY_TRACK_MODIFICATIONS = False
+    #SQLALCHEMY_RECORD_QUERIES = False
 
     @staticmethod
     def init_app(app):
@@ -24,31 +24,41 @@ class DevelopmentConfig(Config):
     LOG_LEVEL = os.environ.get('LOG_LEVEL') or logging.INFO
     LOGGER_NAME = ENV_NAME + '-' + Config.NAME
     # Database settings
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+
+    MONGODB_SETTINGS = {
+        'host' : 'mongomock://localhost:27017/test_db'
+    }
 
 
 class ProductionConfig(Config):
     ENV_NAME = os.environ.get('ENV_NAME') or 'prod'
     LOG_LEVEL = os.environ.get('LOG_LEVEL') or logging.INFO
     LOGGER_NAME = ENV_NAME + '-' + Config.NAME
+
     # Database settings
     DB_USER = os.environ.get('DB_USER')
     DB_PASSWORD = os.environ.get('DB_PASSWORD')
+
     DB_HOST = os.environ.get('DB_HOST')
     DB_NAME = os.environ.get('DB_NAME')
-    DB_PORT = os.environ.get('DB_PORT')
+    DB_PORT = int(os.environ.get('DB_PORT'))
 
-    # mysql+pymysql://<username>:<password>@<host>/<dbname>[?<options>]
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}:{}/{}'\
-        .format(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME) 
+    MONGODB_SETTINGS = {
+        'db': DB_NAME,
+        'host': DB_HOST,
+        'port': DB_PORT,
+        'username': DB_USER,
+        'password': DB_PASSWORD
+    }
         
 
 class TestConfig(Config):
     ENV_NAME = 'test'
     LOG_LEVEL = logging.DEBUG
     LOGGER_NAME = ENV_NAME + '-' + Config.NAME
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    #SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    #SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 config = {

@@ -15,7 +15,7 @@ RUN pip3 install --upgrade pip && \
 
 COPY wsgi.py        /home/messages/
 COPY app            /home/messages/app
-COPY migrations     /home/messages/migrations
+# COPY migrations     /home/messages/migrations
 COPY tests          /home/messages/tests
 COPY entrypoint.sh  /home/messages/
 RUN chmod u+x       /home/messages/entrypoint.sh

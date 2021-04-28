@@ -5,7 +5,7 @@ from flask import current_app as app
 
 from . import api, spec
 from ..exceptions import WebserviceException
-from ..models import Message, MessageResponseSchema, MessageRequestSchema
+from ..models import Message, MessageRequestSchema, MessageResponseSchema
 
 
 spec.components.schema("MessageRequestSchema", schema=MessageRequestSchema)
@@ -56,18 +56,15 @@ def create_message():
     if err:
         return jsonify(errors=err), HTTPStatus.BAD_REQUEST
     
-    msg = Message()
-    msg.content = data['content']
-    msg.add_or_update()
-
-    schema = MessageResponseSchema()
-    result = schema.dump(msg)
+    msg = Message(content=data['content'])
+    msg._save()
+    result = msg._to_dict()
     app.logger.debug('Message created: {}'.format(result))
 
     return jsonify(message=result), HTTPStatus.CREATED
 
 
-@api.route('/messages/<int:id>', methods=['GET'])
+@api.route('/messages/<string:id>', methods=['GET'])
 def get_message(id):
     """
     ---
@@ -98,14 +95,14 @@ def get_message(id):
       tags:
         - messages
     """
-    msg = Message.find_by_id(id)
+    msg = Message._find(id)
     if not msg:
         return jsonify(error='Message Not found'), HTTPStatus.BAD_REQUEST
   
-    schema = MessageResponseSchema()
-    app.logger.debug('Message with id={} retrieved.'.format(msg.id))
+    result = msg._to_dict()
+    app.logger.debug('Message with id={} retrieved.'.format(id))
 
-    return jsonify(message=schema.dump(msg)), HTTPStatus.OK
+    return jsonify(message=result), HTTPStatus.OK
 
 
 @api.route('/messages', methods=['GET'])
@@ -150,24 +147,25 @@ def get_messages():
         - messages
     """
     page = request.args.get('page', 1, type=int)
-    msgs = Message.find_all(page)
-    schema = MessageResponseSchema()
+    limit = request.args.get('limit', app.config['MESSAGES_PER_PAGE'], type=int)
+    msgs = Message._find_all(page, limit)
 
     next_url = url_for('api.get_messages', page=msgs.next_num) \
         if msgs.has_next else None
     prev_url = url_for('api.get_messages', page=msgs.prev_num) \
         if msgs.has_prev else None
     
-    resp = {'messages': [schema.dump(msg) for msg in msgs.items]}
     if next_url:
         resp.update({'next_url': next_url})
     if prev_url:
         resp.update({'prev_url': prev_url})
 
+    resp = {'messages': [msg._to_dict() for msg in msgs.items]}
+
     return jsonify(resp), HTTPStatus.OK
 
 
-@api.route('/messages/<int:id>', methods=['PUT'])
+@api.route('/messages/<string:id>', methods=['PUT'])
 def update_message(id):
     """
     ---
@@ -200,10 +198,6 @@ def update_message(id):
       tags:
         - messages
     """
-    msg = Message.find_by_id(id)
-    if not msg:
-        return jsonify(error='Message Not found'), HTTPStatus.BAD_REQUEST
-
     if not request.data:
         raise WebserviceException(
             message='Request body cannot be empty.', 
@@ -215,16 +209,18 @@ def update_message(id):
     err = schema.validate(data)
     if err:
         return jsonify(errors=err), HTTPStatus.BAD_REQUEST
-    
-    msg.content = data['content']
-    msg.add_or_update()
-    schema = MessageResponseSchema()
-    app.logger.debug('Message with id={} updated.'.format(msg.id))
 
-    return jsonify(message=schema.dump(msg)), HTTPStatus.OK
+    msg = Message._update(id, data['content'])
+    if not msg:
+        return jsonify(error='Message Not found'), HTTPStatus.BAD_REQUEST
+
+    result = msg._to_dict()
+    app.logger.debug('Message with id={} updated.'.format(id))
+
+    return jsonify(message=result), HTTPStatus.OK
 
 
-@api.route('/messages/<int:id>', methods=['DELETE'])
+@api.route('/messages/<string:id>', methods=['DELETE'])
 def delete_message(id):
     """
     ---
@@ -240,11 +236,10 @@ def delete_message(id):
       tags:
         - messages
     """
-    msg = Message.find_by_id(id)
+    msg = Message._delete(id)
     if not msg:
         return jsonify(error='Message Not found'), HTTPStatus.BAD_REQUEST
     
-    msg.delete()
-    app.logger.debug('Message with id={} deleted.'.format(msg.id))
+    app.logger.debug('Message with id={} deleted.'.format(id))
 
     return jsonify(''), HTTPStatus.NO_CONTENT

@@ -1,5 +1,7 @@
 from marshmallow import fields, validate, ValidationError
 from flask import current_app as app
+from datetime import datetime
+
 from . import ma, db
 
 
@@ -17,36 +19,73 @@ def _validate_notblank(val):
         raise ValidationError(message=['Cannot be blank.'], field_name='content')
 
 
-class Message(db.Model):
-    __tablename__ = 'message'
+class Properties(db.EmbeddedDocument):
+    palindrome = db.BooleanField(required=True)
+    length = db.IntField(required=True)
 
-    id            = db.Column(db.Integer, primary_key=True)
-    content       = db.Column(db.String(255), nullable=False)   
-    date_created  = db.Column(db.DateTime,  default=db.func.current_timestamp())
-    date_modified = db.Column(
-        db.DateTime,  
-        default=db.func.current_timestamp(), 
-        onupdate=db.func.current_timestamp()
-    )
+
+class Message(db.Document):
+    content = db.StringField(required=True)
+    date_created = db.DateTimeField(required=True, default=datetime.now())
+    date_modified =  db.DateTimeField(required=True, default=datetime.now())
+    properties = db.EmbeddedDocumentField(Properties)
 
     def __repr__(self):
-        return "Message(id='{self.id}',content='{self.content}')".format(self=self)
+        return '<Message {}>'.format(self.content)
 
-    def add_or_update(self):
-        db.session.add(self)
-        db.session.commit()
+    def _save(self):
+        props = Properties(
+            palindrome=is_palindrome(self.content), 
+            length=len(self.content)
+        )
+        self.properties = props
+        self.save()
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+    @staticmethod
+    def _update(id, content):
+        msg = Message._find(id)
+        if not msg:
+            return False
 
-    @classmethod
-    def find_by_id(cls, id):
-         return cls.query.filter(Message.id == id).first()
+        props = Properties(
+            palindrome=is_palindrome(content), 
+            length=len(content)
+        )
+        msg.update(
+                content=content,
+                properties=props,
+                date_modified=datetime.now()
+            )
+        return msg
+        
+    @staticmethod
+    def _delete(id):
+        msg = Message._find(id)
+        if not msg:
+            return False
 
-    @classmethod
-    def find_all(cls, page):
-        return cls.query.paginate(page, app.config['MESSAGES_PER_PAGE'], False)
+        msg.delete()
+        return True
+
+    @staticmethod
+    def _find(id):
+        return Message.objects(id=id).first()
+
+    @staticmethod
+    def _find_all(page, limit):
+        return Message.objects.paginate(page, limit)
+
+    def _to_dict(self):
+        return {
+            'id': str(self.id),
+            'content': self.content,
+            'date_created': self.date_created.isoformat(),
+            'date_modified': self.date_modified.isoformat(),
+            'properties': {
+                'palindrome': self.properties.palindrome,
+                'length': self.properties.length
+            }
+        }
 
 
 class MessageRequestSchema(ma.Schema):
@@ -57,21 +96,19 @@ class MessageRequestSchema(ma.Schema):
         ])
 
 
-class MessageResponseSchema(ma.SQLAlchemySchema):
+class PropertiesSchema(ma.Schema):
+    palindrome = fields.Boolean()
+    length = fields.Integer()
+
+
+class MessageResponseSchema(ma.Schema):
     class Meta:
         model = Message
-        fields = ('id', 'date_created', 'date_modified', 'content', 'palindrome',)
+        fields = ('id', 'date_created', 'date_modified', 'content', 'properties',)
 
-    id              = fields.Integer(required=False)
-    date_created    = fields.DateTime(required=False, dump_only=True)
-    date_modified   = fields.DateTime(required=False, dump_only=True)
-    content         = fields.String(required=True, 
-                        validate=[
-                            validate.Length(min=1, max=255, error='Lenght must be between {min} and {max} charcaters.'),
-                            _validate_notblank
-                        ])
-    palindrome      = fields.Method('_palindrome', dump_only=True,  metadata={'doc_default': False})
+    id              = fields.Integer()
+    date_created    = fields.DateTime(dump_only=True)
+    date_modified   = fields.DateTime(dump_only=True)
+    content         = fields.String()
+    properties      = fields.Nested(PropertiesSchema, dump_only=True)
 
-    @staticmethod
-    def _palindrome(obj):
-        return is_palindrome(obj.content)

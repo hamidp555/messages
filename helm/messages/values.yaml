@@ -20,10 +20,10 @@ ingress:
 db:
   user: msg_user
   password: passwordmsg
-  host: db-mysql.default.svc.cluster.local
-  port: 3306
+  host: db-mongodb
+  port: 27017
   name: msg_database
-  
+
 resources: 
   limits:
     cpu: 1000m

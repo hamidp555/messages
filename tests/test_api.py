@@ -13,13 +13,10 @@ class APITestCase(TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client = self.app.test_client()        
-        db.create_all()
         self.endpoint = self.api_base_url + '/messages'
         self.APPLICATION_JSON = 'application/json'
 
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
         self.app_context.pop()
     
     # create

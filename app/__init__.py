@@ -1,15 +1,17 @@
 from flask import Flask, jsonify, make_response
 from flask_marshmallow import Marshmallow
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+# from flask_migrate import Migrate
+from flask_mongoengine import MongoEngine
+
 from http import HTTPStatus
 
 from .config import config
 
 
-db = SQLAlchemy()
+# db = SQLAlchemy()
+db = MongoEngine()
 ma = Marshmallow()
-mg = Migrate()
+# mg = Migrate()
 
 
 def create_app(config_name):
@@ -23,7 +25,7 @@ def create_app(config_name):
 
         db.init_app(app)
         ma.init_app(app)
-        mg.init_app(app, db)
+        # mg.init_app(app, db)
 
         app.logger.info('Initializing webservice')
 

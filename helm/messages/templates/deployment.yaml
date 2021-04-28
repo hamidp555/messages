@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
         - name: init-db
-          image: bitnami/mysql
+          image: bitnami/mongodb
           env:
             - name: DB_HOST
               valueFrom:
@@ -43,13 +43,18 @@ spec:
                 configMapKeyRef:
                   name: {{ $fullName }}
                   key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ $fullName }}
+                  key: DB_NAME
           command: ["/bin/sh", "-c"]
           args: [
-            "until mysql -h $DB_HOST -u$DB_USER -p$DB_PASSWORD  \
-            -e \"SHOW GLOBAL VARIABLES LIKE 'PORT'\" >/dev/null; do \
-            echo Mysql is unavailable - sleeping; sleep 5; \
+            "until mongo --host $DB_HOST --authenticationDatabase $DB_NAME --username $DB_USER --password $DB_PASSWORD \
+            --eval \"db.adminCommand('listDatabases')\" >/dev/null; do \
+            echo mongoDB is unavailable - sleeping; sleep 5; \
             done; \
-            echo Mysql is running"
+            echo mongoDB is running"
           ]
       containers:
         - name: {{ .Chart.Name }}
