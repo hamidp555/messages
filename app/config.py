@@ -23,6 +23,7 @@ class DevelopmentConfig(Config):
     ENV_NAME = os.environ.get('ENV_NAME') or 'dev'
     LOG_LEVEL = os.environ.get('LOG_LEVEL') or logging.INFO
     LOGGER_NAME = ENV_NAME + '-' + Config.NAME
+
     # Database settings
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 
@@ -31,6 +32,12 @@ class ProductionConfig(Config):
     ENV_NAME = os.environ.get('ENV_NAME') or 'prod'
     LOG_LEVEL = os.environ.get('LOG_LEVEL') or logging.INFO
     LOGGER_NAME = ENV_NAME + '-' + Config.NAME
+
+    #auth
+    AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+    API_IDENTIFIER = os.environ.get('API_IDENTIFIER')
+    ALGORITHMS = [ os.environ.get('ALGORITHMS') ]
+
     # Database settings
     DB_USER = os.environ.get('DB_USER')
     DB_PASSWORD = os.environ.get('DB_PASSWORD')

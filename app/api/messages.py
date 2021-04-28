@@ -6,16 +6,19 @@ from flask import current_app as app
 from . import api, spec
 from ..exceptions import WebserviceException
 from ..models import Message, MessageResponseSchema, MessageRequestSchema
+from ..main.auth import requires_auth
 
 
 spec.components.schema("MessageRequestSchema", schema=MessageRequestSchema)
 spec.components.schema("MessageResponseSchema", schema=MessageResponseSchema)
 
 @api.route('/swagger.json', methods=['GET'])
+@requires_auth
 def swagger_spec():
     return jsonify(spec.to_dict())
 
 @api.route('/messages', methods=['POST'])
+@requires_auth
 def create_message():
     """
     ---
@@ -68,6 +71,7 @@ def create_message():
 
 
 @api.route('/messages/<int:id>', methods=['GET'])
+@requires_auth
 def get_message(id):
     """
     ---
@@ -109,6 +113,7 @@ def get_message(id):
 
 
 @api.route('/messages', methods=['GET'])
+@requires_auth
 def get_messages():
     """
     ---
@@ -168,6 +173,7 @@ def get_messages():
 
 
 @api.route('/messages/<int:id>', methods=['PUT'])
+@requires_auth
 def update_message(id):
     """
     ---
@@ -225,6 +231,7 @@ def update_message(id):
 
 
 @api.route('/messages/<int:id>', methods=['DELETE'])
+@requires_auth
 def delete_message(id):
     """
     ---

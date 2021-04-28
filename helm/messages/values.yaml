@@ -23,6 +23,12 @@ db:
   host: db-mysql.default.svc.cluster.local
   port: 3306
   name: msg_database
+
+auth:
+  domain: dev-r810o8jt.us.auth0.com
+  apiIdentifier: http://messages-webservice/api/v1/messages
+  alg: RS256
+
   
 resources: 
   limits:

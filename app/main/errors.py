@@ -1,6 +1,7 @@
 from flask import jsonify, make_response
 from http import HTTPStatus
 
+from ..exceptions import AuthError
 from . import main
 
 
@@ -15,3 +16,7 @@ def method_not_found(err):
 @main.app_errorhandler(HTTPStatus.INTERNAL_SERVER_ERROR)
 def internal_server_error(err):
     return make_response(jsonify(error='internal server error'), HTTPStatus.INTERNAL_SERVER_ERROR)
+
+@main.app_errorhandler(AuthError)
+def handle_auth_error(err):
+    return jsonify(err.error),  err.status_code

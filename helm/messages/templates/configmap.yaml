@@ -12,6 +12,11 @@ data:
     DB_NAME: {{ .Values.db.name | quote }}
     DB_PORT: {{ .Values.db.port | quote }}
 
+    # auth
+    AUTH0_DOMAIN: {{ .Values.auth.domain | quote }}
+    API_IDENTIFIER: {{ .Values.auth.apiIdentifier | quote }}
+    ALGORITHMS: {{ .Values.auth.alg | quote }}
+
 
 
 

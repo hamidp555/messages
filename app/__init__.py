@@ -2,6 +2,7 @@ from flask import Flask, jsonify, make_response
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from http import HTTPStatus
 
 from .config import config
@@ -16,6 +17,7 @@ def create_app(config_name):
     """application factory function"""
 
     app = Flask(__name__)
+    CORS(app)
 
     with app.app_context():
         app.config.from_object(config[config_name])
